@@ -14,29 +14,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-package adr
+
+package mock
 
 import (
-	"embed"
-	"io"
-	"log"
-
-	"html/template"
+	"github.com/fuhrmeistery/adr/internal/adding"
 )
 
-//go:embed template.md
-var content embed.FS
+type Repository struct {
+	adrs []adding.ADR
+}
 
-func CreateAdr(wr io.Writer, adr *ADR) {
+func NewRepository() *Repository {
+	return &Repository{[]adding.ADR{}}
+}
 
-	tmp, err := content.ReadFile("template.md")
-	if err != nil {
-		log.Fatal(err)
-	}
+func (r *Repository) Get() []adding.ADR {
+	return r.adrs
+}
 
-	tmpl, err := template.New("ADR").Parse(string(tmp))
-	if err != nil {
-		log.Fatal(err)
-	}
-	tmpl.Execute(wr, adr)
+func (r *Repository) AddAdr(a adding.ADR) error {
+	r.adrs = append(r.adrs, a)
+	return nil
 }

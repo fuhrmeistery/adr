@@ -17,13 +17,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"fmt"
 	"log"
-	"os"
 	"strings"
-	"time"
 
-	"github.com/fuhrmeistery/adr/pkg/adr"
+	"github.com/fuhrmeistery/adr/internal/adding"
+	"github.com/fuhrmeistery/adr/internal/storage/filesystem"
 	"github.com/spf13/cobra"
 )
 
@@ -34,39 +32,19 @@ var newCmd = &cobra.Command{
 	Long:  `Create a new ADR.`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		repository := filesystem.NewStorage()
+		service := adding.NewService(repository)
 		title := strings.Join(args, " ")
-		filename := strings.Join(args, "-")
-
-		file, err := os.Create("0001-" + filename + ".md")
-
+		err := service.AddAdr(title, superseded, links)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalln(err)
 		}
-		defer file.Close()
 
-		someTitle := "some-name"
-		t := time.Now()
-
-		sup := fmt.Sprintf("[ADR-%d](./%d-%s.md)", supersede, supersede, someTitle)
-
-		a := &adr.ADR{
-			Id:         1,
-			Title:      title,
-			Date:       t.Local().Format("2006-01-02"),
-			Status:     "Proposed",
-			Supersedes: sup,
-			Links: []string{
-				"[ADR-0001](./0001-template.md)",
-				"[ADR-0002](./0002-template.md)",
-				"[ADR-0003](./0003-template.md)",
-			},
-		}
-		adr.CreateAdr(file, a)
 	},
 }
 
 var links []int
-var supersede int
+var superseded int
 
 func init() {
 	rootCmd.AddCommand(newCmd)
@@ -81,5 +59,5 @@ func init() {
 	// is called directly, e.g.:
 	// newCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	newCmd.Flags().IntSliceVarP(&links, "link", "l", nil, "Create a link between the new ADR and an existing one")
-	newCmd.Flags().IntVarP(&supersede, "supersede", "s", 0, "Mark an old ADR as superseeded")
+	newCmd.Flags().IntVarP(&superseded, "supersede", "s", 0, "Mark an old ADR as superseeded")
 }

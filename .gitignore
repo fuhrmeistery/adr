@@ -16,6 +16,9 @@ adr
 # Test binary, built with `go test -c`
 *.test
 
+# Coverage Profiles
+*.coverprofile
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 

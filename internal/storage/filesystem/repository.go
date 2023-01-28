@@ -36,11 +36,16 @@ func NewStorage() *Storage {
 }
 
 func (s *Storage) AddAdr(a adding.ADR) error {
+	adr := s.createADR(a)
+	return s.save(adr)
+}
+
+func (s *Storage) createADR(a adding.ADR) ADR {
 	superseded := "0001-some-name.md"
 	links := []string{
 		CreateLink("0002-something-else.md"),
 	}
-	adr := ADR{
+	return ADR{
 		Id:         1,
 		Title:      a.Title,
 		Date:       a.Date,
@@ -48,7 +53,9 @@ func (s *Storage) AddAdr(a adding.ADR) error {
 		Supersedes: CreateLink(superseded),
 		Links:      links,
 	}
+}
 
+func (s *Storage) save(a ADR) error {
 	wr, err := os.Create("0001-" + a.Title + ".md")
 
 	if err != nil {
@@ -65,5 +72,6 @@ func (s *Storage) AddAdr(a adding.ADR) error {
 	if err != nil {
 		return err
 	}
-	return tmpl.Execute(wr, adr)
+	return tmpl.Execute(wr, a)
+
 }

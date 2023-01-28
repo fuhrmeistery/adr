@@ -59,7 +59,7 @@ func init() {
 
 func initConfig() {
 	viper.SetConfigName("adr")
-	viper.SetConfigType("properties")
+	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./.adr")
 	err := viper.ReadInConfig()
 	if err != nil {

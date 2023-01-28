@@ -33,7 +33,7 @@ var newCmd = &cobra.Command{
 	Long:  `Create a new ADR.`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		dir := viper.GetString("docPath")
+		dir := viper.GetString("directory")
 		repository := filesystem.NewStorage(dir)
 		service := adding.NewService(repository)
 		title := strings.Join(args, " ")

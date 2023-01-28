@@ -14,6 +14,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 package adding_test
 
 import (
@@ -23,7 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestMarkdown(t *testing.T) {
+func TestAdding(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Adding Suite")
 }

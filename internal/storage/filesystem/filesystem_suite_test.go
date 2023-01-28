@@ -24,7 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestMarkdown(t *testing.T) {
+func TestFilesystem(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Adding Suite")
+	RunSpecs(t, "Filesystem Suite")
 }

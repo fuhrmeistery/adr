@@ -20,7 +20,9 @@ package filesystem
 import (
 	"embed"
 	"html/template"
+	"log"
 	"os"
+	"sync"
 
 	"github.com/fuhrmeistery/adr/internal/adding"
 )
@@ -29,24 +31,33 @@ import (
 var content embed.FS
 
 type Storage struct {
+	m         sync.Mutex
+	directory string
 }
 
-func NewStorage() *Storage {
-	return &Storage{}
+func NewStorage(directory string) *Storage {
+	return &Storage{directory: directory}
 }
 
 func (s *Storage) AddAdr(a adding.ADR) error {
+	s.m.Lock()
+	defer s.m.Unlock()
 	adr := s.createADR(a)
 	return s.save(adr)
 }
 
 func (s *Storage) createADR(a adding.ADR) ADR {
+	id, err := s.getNextId()
+	if err != nil {
+		log.Fatal(err)
+		log.Fatal("Cannot get next Id")
+	}
 	superseded := "0001-some-name.md"
 	links := []string{
 		CreateLink("0002-something-else.md"),
 	}
 	return ADR{
-		Id:         1,
+		Id:         id,
 		Title:      a.Title,
 		Date:       a.Date,
 		Status:     a.Status,
@@ -55,8 +66,17 @@ func (s *Storage) createADR(a adding.ADR) ADR {
 	}
 }
 
+func (s *Storage) getNextId() (int, error) {
+	files, err := os.ReadDir(s.directory)
+	if err != nil {
+		return 0, err
+	}
+	return len(files) + 1, nil
+}
+
 func (s *Storage) save(a ADR) error {
-	wr, err := os.Create("0001-" + a.Title + ".md")
+	filename := CreateFilename(a.Id, a.Title)
+	wr, err := os.Create(s.directory + "/" + filename)
 
 	if err != nil {
 		return err

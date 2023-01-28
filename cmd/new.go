@@ -23,6 +23,7 @@ import (
 	"github.com/fuhrmeistery/adr/internal/adding"
 	"github.com/fuhrmeistery/adr/internal/storage/filesystem"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // newCmd represents the new command
@@ -32,7 +33,8 @@ var newCmd = &cobra.Command{
 	Long:  `Create a new ADR.`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		repository := filesystem.NewStorage()
+		dir := viper.GetString("docPath")
+		repository := filesystem.NewStorage(dir)
 		service := adding.NewService(repository)
 		title := strings.Join(args, " ")
 		err := service.AddAdr(title, superseded, links)

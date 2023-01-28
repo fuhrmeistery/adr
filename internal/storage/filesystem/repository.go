@@ -19,6 +19,7 @@ package filesystem
 
 import (
 	"embed"
+	"errors"
 	"html/template"
 	"log"
 	"os"
@@ -52,7 +53,8 @@ func (s *Storage) createADR(a adding.ADR) ADR {
 		log.Fatal(err)
 		log.Fatal("Cannot get next Id")
 	}
-	superseded := "0001-some-name.md"
+	superseded, err := s.createLinkToSuperseded(a.Supersedes)
+
 	links := []string{
 		CreateLink("0002-something-else.md"),
 	}
@@ -61,9 +63,28 @@ func (s *Storage) createADR(a adding.ADR) ADR {
 		Title:      a.Title,
 		Date:       a.Date,
 		Status:     a.Status,
-		Supersedes: CreateLink(superseded),
+		Supersedes: superseded,
 		Links:      links,
 	}
+}
+
+func (s *Storage) createLinkToSuperseded(superseded int) (string, error) {
+	filename, err := s.getFilenameById(superseded)
+	if err != nil {
+		return "", err
+	}
+	return CreateLink(filename), nil
+}
+
+func (s *Storage) getFilenameById(id int) (string, error) {
+	files, err := os.ReadDir(s.directory)
+	if err != nil {
+		return "", err
+	}
+	if len(files) < id || id == 0 {
+		return "", errors.New("id does not exist")
+	}
+	return files[id-1].Name(), nil
 }
 
 func (s *Storage) getNextId() (int, error) {

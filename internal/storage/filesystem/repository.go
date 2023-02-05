@@ -43,17 +43,24 @@ func NewStorage(directory string) *Storage {
 func (s *Storage) AddAdr(a adding.ADR) error {
 	s.m.Lock()
 	defer s.m.Unlock()
-	adr := s.createADR(a)
+	adr, err := s.createADR(a)
+	if err != nil {
+		return err
+	}
 	return s.saveADR(adr)
 }
 
-func (s *Storage) createADR(a adding.ADR) ADR {
+func (s *Storage) createADR(a adding.ADR) (ADR, error) {
 	id, err := s.getNextADRId()
 	if err != nil {
 		log.Fatal(err)
 		log.Fatal("Cannot get next Id")
 	}
 	superseded, err := s.createLinkToSuperseded(a.Supersedes)
+
+	if err != nil {
+		return ADR{}, err
+	}
 
 	links := []string{
 		CreateLink("0002-something-else.md"),
@@ -65,7 +72,7 @@ func (s *Storage) createADR(a adding.ADR) ADR {
 		Status:     a.Status,
 		Supersedes: superseded,
 		Links:      links,
-	}
+	}, nil
 }
 
 func (s *Storage) createLinkToSuperseded(superseded int) (string, error) {

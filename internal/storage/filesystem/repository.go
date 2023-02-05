@@ -44,11 +44,11 @@ func (s *Storage) AddAdr(a adding.ADR) error {
 	s.m.Lock()
 	defer s.m.Unlock()
 	adr := s.createADR(a)
-	return s.save(adr)
+	return s.saveADR(adr)
 }
 
 func (s *Storage) createADR(a adding.ADR) ADR {
-	id, err := s.getNextId()
+	id, err := s.getNextADRId()
 	if err != nil {
 		log.Fatal(err)
 		log.Fatal("Cannot get next Id")
@@ -87,7 +87,7 @@ func (s *Storage) getFilenameById(id int) (string, error) {
 	return files[id-1].Name(), nil
 }
 
-func (s *Storage) getNextId() (int, error) {
+func (s *Storage) getNextADRId() (int, error) {
 	files, err := os.ReadDir(s.directory)
 	if err != nil {
 		return 0, err
@@ -95,7 +95,7 @@ func (s *Storage) getNextId() (int, error) {
 	return len(files) + 1, nil
 }
 
-func (s *Storage) save(a ADR) error {
+func (s *Storage) saveADR(a ADR) error {
 	filename := CreateFilename(a.Id, a.Title)
 	wr, err := os.Create(s.directory + "/" + filename)
 

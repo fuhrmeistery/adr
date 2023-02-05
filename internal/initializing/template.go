@@ -15,36 +15,30 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package mock
+package initializing
 
-import (
-	"github.com/fuhrmeistery/adr/internal/adding"
-	"github.com/fuhrmeistery/adr/internal/initializing"
-)
+const template string = `# {{ .Id }}. {{ .Title }}
 
-type Repository struct {
-	adrs []adding.ADR
-	conf initializing.Config
-}
+Date: {{ .Date }}
 
-func NewRepository() *Repository {
-	return &Repository{[]adding.ADR{}, initializing.Config{}}
-}
+## Status
 
-func (r *Repository) GetADR() []adding.ADR {
-	return r.adrs
-}
+{{ .Status }}
 
-func (r *Repository) AddAdr(a adding.ADR) error {
-	r.adrs = append(r.adrs, a)
-	return nil
-}
+  * Supersedes {{ .Supersedes -}}
+{{ range .Links }}
+  * {{ . }}
+{{- end }}
 
-func (r *Repository) AddConfig(c initializing.Config) error {
-	r.conf = c
-	return nil
-}
+## Context
 
-func (r *Repository) GetConfig() initializing.Config {
-	return r.conf
-}
+Record the architectural decisions made on this project.
+
+## Decision
+
+We will use Architecture Decision Records, as described by Michael Nygard in this article: http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions
+
+## Consequences
+
+See Michael Nygard's article, linked above.
+`

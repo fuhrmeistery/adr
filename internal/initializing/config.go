@@ -15,36 +15,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package mock
+package initializing
 
-import (
-	"github.com/fuhrmeistery/adr/internal/adding"
-	"github.com/fuhrmeistery/adr/internal/initializing"
-)
-
-type Repository struct {
-	adrs []adding.ADR
-	conf initializing.Config
-}
-
-func NewRepository() *Repository {
-	return &Repository{[]adding.ADR{}, initializing.Config{}}
-}
-
-func (r *Repository) GetADR() []adding.ADR {
-	return r.adrs
-}
-
-func (r *Repository) AddAdr(a adding.ADR) error {
-	r.adrs = append(r.adrs, a)
-	return nil
-}
-
-func (r *Repository) AddConfig(c initializing.Config) error {
-	r.conf = c
-	return nil
-}
-
-func (r *Repository) GetConfig() initializing.Config {
-	return r.conf
+type Config struct {
+	Directory string
+	Template  string
 }

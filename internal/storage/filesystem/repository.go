@@ -26,6 +26,8 @@ import (
 	"sync"
 
 	"github.com/fuhrmeistery/adr/internal/adding"
+	"github.com/fuhrmeistery/adr/internal/initializing"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed template.md
@@ -48,6 +50,33 @@ func (s *Storage) AddAdr(a adding.ADR) error {
 		return err
 	}
 	return s.saveADR(adr)
+}
+
+func (s *Storage) AddConfig(c initializing.Config) error {
+	s.m.Lock()
+	defer s.m.Unlock()
+	conf := Config{
+		Directory: c.Directory,
+		Template:  c.Template,
+	}
+	return s.saveConfig(conf)
+}
+
+func (s *Storage) saveConfig(c Config) error {
+	filename := "adr.yaml"
+	wr, err := os.Create(s.directory + "/" + filename)
+
+	if err != nil {
+		return err
+	}
+	defer wr.Close()
+
+	out, err := yaml.Marshal(c)
+	if err != err {
+		return err
+	}
+	_, err = wr.Write(out)
+	return err
 }
 
 func (s *Storage) createADR(a adding.ADR) (ADR, error) {
@@ -121,5 +150,4 @@ func (s *Storage) saveADR(a ADR) error {
 		return err
 	}
 	return tmpl.Execute(wr, a)
-
 }

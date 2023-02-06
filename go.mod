@@ -1,6 +1,6 @@
 module github.com/fuhrmeistery/adr
 
-go 1.19
+go 1.20
 
 require (
 	github.com/hashicorp/hcl v1.0.0 // indirect

@@ -30,7 +30,7 @@ var _ = DescribeTable("ADR Adding", func(title string, superseded int, links []i
 	r := mock.NewRepository()
 	s := adding.NewService(r)
 	s.AddAdr(title, superseded, links)
-	result := r.Get()[0]
+	result := r.GetADR()[0]
 	Expect(result).To(Equal(expected))
 
 },

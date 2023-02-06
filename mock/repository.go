@@ -29,7 +29,7 @@ func NewRepository() *Repository {
 	return &Repository{[]adding.ADR{}}
 }
 
-func (r *Repository) Get() []adding.ADR {
+func (r *Repository) GetADR() []adding.ADR {
 	return r.adrs
 }
 

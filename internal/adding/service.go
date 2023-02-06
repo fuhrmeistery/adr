@@ -21,8 +21,10 @@ import (
 	"time"
 )
 
+const PROPOSED = "Proposed"
+
 type Service interface {
-	AddAdr(title string, superseded int, link []int) error
+	AddAdr(title string, superseded int, links []int) error
 }
 
 type Repository interface {
@@ -37,14 +39,14 @@ func NewService(r Repository) Service {
 	return &service{r}
 }
 
-func (s service) AddAdr(title string, superseded int, link []int) error {
+func (s service) AddAdr(title string, superseded int, links []int) error {
 	t := time.Now()
 	a := ADR{
 		Title:      title,
 		Date:       t.Local().Format("2006-01-02"),
-		Status:     "Proposed",
-		Supersedes: 1,
-		Links:      []int{1, 2, 3},
+		Status:     PROPOSED,
+		Supersedes: superseded,
+		Links:      links,
 	}
 	return s.r.AddAdr(a)
 }

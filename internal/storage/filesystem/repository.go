@@ -82,7 +82,6 @@ func (s *Storage) createADR(a adding.ADR) (ADR, error) {
 	id, err := s.getNextADRId()
 	if err != nil {
 		log.Fatal(err)
-		log.Fatal("Cannot get next Id")
 	}
 	superseded, err := s.createLinkToSuperseded(a.Supersedes)
 
@@ -90,9 +89,16 @@ func (s *Storage) createADR(a adding.ADR) (ADR, error) {
 		return ADR{}, err
 	}
 
-	links := []string{
-		CreateLink("0002-something-else.md"),
+	links := []string{}
+
+	for _, val := range a.Links {
+		filename, err := s.getFilenameById(val)
+		if err != nil {
+			log.Fatal(err)
+		}
+		links = append(links, CreateLink(filename))
 	}
+
 	return ADR{
 		Id:         id,
 		Title:      a.Title,
@@ -105,6 +111,9 @@ func (s *Storage) createADR(a adding.ADR) (ADR, error) {
 
 func (s *Storage) createLinkToSuperseded(superseded int) (string, error) {
 	filename, err := s.getFilenameById(superseded)
+	if superseded == 0 {
+		return "", nil
+	}
 	if err != nil {
 		return "", err
 	}

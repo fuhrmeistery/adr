@@ -24,9 +24,10 @@ Date: {{ .Date }}
 ## Status
 
 {{ .Status }}
-
+{{ if .Supersedes }}
   * Supersedes {{ .Supersedes -}}
-{{ range .Links }}
+{{ end }}
+{{- range .Links }}
   * {{ . }}
 {{- end }}
 

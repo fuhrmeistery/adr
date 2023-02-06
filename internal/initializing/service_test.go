@@ -33,7 +33,7 @@ Date: {{ .Date }}
 {{ .Status }}
 {{ if .Supersedes }}
   * Supersedes {{ .Supersedes -}}
-{{- end }}
+{{ end }}
 {{- range .Links }}
   * {{ . }}
 {{- end }}
@@ -55,7 +55,10 @@ var _ = Describe("Initialize ADR config", func() {
 	It("Should create file with default template and ADR directory", func() {
 		r := mock.NewRepository()
 		s := initializing.NewService(r)
-		s.AddConfig("adr")
+		err := s.AddConfig("adr")
+		if err != nil {
+			Fail("Error in Service")
+		}
 		result := r.GetConfig()
 		Expect(result.Directory).To(Equal("adr"))
 		Expect(result.Template).To(Equal(template))

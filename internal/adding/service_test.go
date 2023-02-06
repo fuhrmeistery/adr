@@ -29,7 +29,10 @@ import (
 var _ = DescribeTable("ADR Adding", func(title string, superseded int, links []int, expected adding.ADR) {
 	r := mock.NewRepository()
 	s := adding.NewService(r)
-	s.AddAdr(title, superseded, links)
+	err := s.AddAdr(title, superseded, links)
+	if err != nil {
+		Fail("Error in Service")
+	}
 	result := r.GetADR()[0]
 	Expect(result).To(Equal(expected))
 

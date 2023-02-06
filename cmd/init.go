@@ -33,7 +33,7 @@ contains a configuration file called 'adr.yaml'. This file will contain
 information about where the ADRs are stored and which template to use
 to create the ADR.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dir := ".adr"
+		dir := "test"
 		repository := filesystem.NewStorage(dir)
 		service := initializing.NewService(repository)
 		err := service.AddConfig(dir)

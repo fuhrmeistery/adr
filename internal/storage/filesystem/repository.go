@@ -18,7 +18,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package filesystem
 
 import (
-	"embed"
 	"errors"
 	"html/template"
 	"log"
@@ -30,10 +29,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed template.md
-var content embed.FS
+const configDir = ".adr"
 
 type Storage struct {
+	configMutex  sync.Mutex
 	adrMutex     sync.Mutex
 	adrDirectory string
 }
@@ -64,7 +63,7 @@ func (s *Storage) AddConfig(c initializing.Config) error {
 
 func (s *Storage) saveConfig(c Config) error {
 	filename := "adr.yaml"
-	wr, err := os.Create(s.adrDirectory + "/" + filename)
+	wr, err := os.Create(configDir + "/" + filename)
 
 	if err != nil {
 		return err
@@ -133,14 +132,14 @@ func (s *Storage) getNextADRId() (int, error) {
 
 func (s *Storage) saveADR(a ADR) error {
 	filename := CreateFilename(a.Id, a.Title)
-	wr, err := os.Create(s.directory + "/" + filename)
+	wr, err := os.Create(s.adrDirectory + "/" + filename)
 
 	if err != nil {
 		return err
 	}
 	defer wr.Close()
 
-	tmp, err := content.ReadFile("template.md")
+	tmp, err := s.getADRTemplate()
 	if err != nil {
 		return err
 	}
@@ -150,4 +149,16 @@ func (s *Storage) saveADR(a ADR) error {
 		return err
 	}
 	return tmpl.Execute(wr, a)
+}
+
+func (s *Storage) getADRTemplate() (string, error) {
+	s.configMutex.Lock()
+	defer s.configMutex.Unlock()
+	c, err := os.ReadFile(configDir + "/" + "adr.yaml")
+	if err != nil {
+		return "", err
+	}
+	var conf Config
+	err = yaml.Unmarshal(c, &conf)
+	return conf.Template, err
 }

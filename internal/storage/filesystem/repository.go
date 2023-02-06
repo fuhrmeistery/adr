@@ -34,17 +34,17 @@ import (
 var content embed.FS
 
 type Storage struct {
-	m         sync.Mutex
-	directory string
+	adrMutex     sync.Mutex
+	adrDirectory string
 }
 
 func NewStorage(directory string) *Storage {
-	return &Storage{directory: directory}
+	return &Storage{adrDirectory: directory}
 }
 
 func (s *Storage) AddAdr(a adding.ADR) error {
-	s.m.Lock()
-	defer s.m.Unlock()
+	s.adrMutex.Lock()
+	defer s.adrMutex.Unlock()
 	adr, err := s.createADR(a)
 	if err != nil {
 		return err
@@ -53,8 +53,8 @@ func (s *Storage) AddAdr(a adding.ADR) error {
 }
 
 func (s *Storage) AddConfig(c initializing.Config) error {
-	s.m.Lock()
-	defer s.m.Unlock()
+	s.adrMutex.Lock()
+	defer s.adrMutex.Unlock()
 	conf := Config{
 		Directory: c.Directory,
 		Template:  c.Template,
@@ -64,7 +64,7 @@ func (s *Storage) AddConfig(c initializing.Config) error {
 
 func (s *Storage) saveConfig(c Config) error {
 	filename := "adr.yaml"
-	wr, err := os.Create(s.directory + "/" + filename)
+	wr, err := os.Create(s.adrDirectory + "/" + filename)
 
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (s *Storage) createLinkToSuperseded(superseded int) (string, error) {
 }
 
 func (s *Storage) getFilenameById(id int) (string, error) {
-	files, err := os.ReadDir(s.directory)
+	files, err := os.ReadDir(s.adrDirectory)
 	if err != nil {
 		return "", err
 	}
@@ -124,7 +124,7 @@ func (s *Storage) getFilenameById(id int) (string, error) {
 }
 
 func (s *Storage) getNextADRId() (int, error) {
-	files, err := os.ReadDir(s.directory)
+	files, err := os.ReadDir(s.adrDirectory)
 	if err != nil {
 		return 0, err
 	}
